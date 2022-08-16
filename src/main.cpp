@@ -60,6 +60,26 @@ void updatePointsToAvoid() {
     psCloud->setPointColor(polyscope::render::RGB_RED)->setEnabled(true);
 }
 
+/*
+ * Save points as vertex positions in an OBJ file.
+ */
+void saveSamples(const std::vector<SurfacePoint>& points, const std::string& filepath) {
+
+    std::fstream file;
+    file.open(filepath, std::ios::out | std::ios::trunc);
+
+    if (file.is_open()) {
+        for (const SurfacePoint& pt : points) {
+            Vector3 pos = pt.interpolate(geometry->inputVertexPositions);
+            file << "v " << pos[0] << " " << pos[1] << " " << pos[2] << "\n";
+        }
+        std::cerr << "File " << filepath << " written succesfully." << std::endl;
+        file.close();
+    } else {
+        std::cerr << "Could not save file '" << filepath << "'!" << std::endl;
+    }
+}
+
 void myCallback() {
 
     if (ImGui::Button("Sample")) {

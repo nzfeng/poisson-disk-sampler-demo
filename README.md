@@ -11,7 +11,7 @@ The algorithm has a few parameters that roughly correspond to the algorithm of B
 * `rCoef` corresponds to the minimum distance between samples, expressed as a multiple of the mean edge length. The actual minimum distance is computed as `r = rCoef * meanEdgeLength`.
 * `kCandidates` = the number of candidate points chosen from the (r,2r)-annulus around each sample.
 
-<!-- Additionally, you can specify points around samples should be avoided. By default, samples will avoid these points with the same radius `r` used in the rest of the algorithm. You can optionally specify a "radius of avoidance" for these points, where the radius of avoidance is given in multiples of `r`. -->
+Additionally, you can specify points around samples should be avoided. By default, samples will avoid these points with the same radius `r` used in the rest of the algorithm. You can optionally specify a "radius of avoidance" for these points, where the radius of avoidance is given in multiples of `r`.
 
 ## Cloning and building
 

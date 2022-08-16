@@ -28,6 +28,7 @@ std::unique_ptr<PoissonDiskSampler> poissonSampler;
 std::string MESHNAME = "input mesh";
 double RCOEF = 1.0;
 int KCANDIDATES = 30;
+int RAVOID = -1;
 std::vector<SurfacePoint> POINTS_TO_AVOID = {};
 std::vector<SurfacePoint> SAMPLES;
 
@@ -47,10 +48,22 @@ void visualizeSamples() {
     psCloud->setPointColor(polyscope::render::RGB_BLACK)->setEnabled(true);
 }
 
+void updatePointsToAvoid() {
+
+    std::vector<Vector3> cloud;
+    for (const SurfacePoint& pt : POINTS_TO_AVOID) {
+        Vector3 pos = pt.interpolate(geometry->inputVertexPositions);
+        cloud.push_back(pos);
+    }
+    // Visualize balls at marked
+    auto psCloud = polyscope::registerPointCloud("points to avoid", cloud);
+    psCloud->setPointColor(polyscope::render::RGB_RED)->setEnabled(true);
+}
+
 void myCallback() {
 
     if (ImGui::Button("Sample")) {
-        SAMPLES = poissonSampler->sample(RCOEF, KCANDIDATES, POINTS_TO_AVOID);
+        SAMPLES = poissonSampler->sample(RCOEF, KCANDIDATES, POINTS_TO_AVOID, RAVOID);
         visualizeSamples();
     }
 
@@ -63,6 +76,32 @@ void myCallback() {
     // }
 
     ImGui::InputInt("kCandidates", &KCANDIDATES);
+
+
+    // If selecting points manually, only vertices can be selected.
+    if (ImGui::TreeNode("Add points to avoid")) {
+
+        if (ImGui::Button("Push Vertex")) {
+
+            long long int iV = psMesh->selectVertex();
+            if (iV != -1) {
+                Vertex v = mesh->vertex(iV);
+                POINTS_TO_AVOID.push_back(SurfacePoint(v));
+                updatePointsToAvoid();
+            }
+        }
+        ImGui::SameLine();
+        if (ImGui::Button("Pop Vertex")) {
+            if (!POINTS_TO_AVOID.empty()) {
+                POINTS_TO_AVOID.pop_back();
+            }
+            updatePointsToAvoid();
+        }
+
+        ImGui::InputInt("Radius of avoidance", &RAVOID);
+
+        ImGui::TreePop();
+    }
 }
 
 int main(int argc, char** argv) {

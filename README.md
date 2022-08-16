@@ -2,7 +2,7 @@ C++ demo code for the Poisson disk sampler in [geometry-central](http://geometry
 
 ![gui screencap](https://raw.githubusercontent.com/nzfeng/poisson-disk-sampler-demo/main/media/gui_screencap.png)
 
-The algorithm takes in a mesh and Poisson disk-samples the surface so that sampled points are distributed evenly *in 3D space*. Technically, Poisson disk sampling on surfaces should ensure that points are at least a certain *geodesic* distance away from each other. But for the purposes of visualization, it can be better to use extrinsic distance of the embedded surface instead, since this will ensure that the sampling *looks* even -- two points could have a large geodesic distance between them but be very near each other in 3D space, which might lead to a visually crowded image. Using 3D distance also speeds up the sampling process.
+The algorithm takes in a mesh and Poisson disk-samples the surface so that sampled points are distributed evenly **in 3D space**. Technically, Poisson disk sampling on surfaces should ensure that points are at least a certain *geodesic* distance away from each other. But for the purposes of visualization, it can be better to use extrinsic distance of the embedded surface instead, since this will ensure that the sampling **looks** even -- two points could have a large geodesic distance between them but be very near each other in 3D space, which might lead to a visually crowded image. Using 3D distance also speeds up the sampling process.
 
 Currently the algorithm only works on manifold meshes.
 

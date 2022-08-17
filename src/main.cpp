@@ -28,7 +28,7 @@ std::unique_ptr<PoissonDiskSampler> poissonSampler;
 std::string MESHNAME = "input mesh";
 double RCOEF = 1.0;
 int KCANDIDATES = 30;
-int RAVOID = -1;
+int RAVOID = 1;
 std::vector<SurfacePoint> POINTS_TO_AVOID = {};
 std::vector<SurfacePoint> SAMPLES;
 
@@ -85,6 +85,9 @@ void myCallback() {
     if (ImGui::Button("Sample")) {
         SAMPLES = poissonSampler->sample(RCOEF, KCANDIDATES, POINTS_TO_AVOID, RAVOID);
         visualizeSamples();
+
+        // saveSamples(SAMPLES, "points_to_avoid.obj");
+        // saveSamples(POINTS_TO_AVOID, "points_to_avoid.obj");
     }
 
     // Options

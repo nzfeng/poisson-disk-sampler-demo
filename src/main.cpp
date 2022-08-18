@@ -11,6 +11,12 @@
 #include "args/args.hxx"
 #include "imgui.h"
 
+#include <chrono>
+using std::chrono::duration;
+using std::chrono::duration_cast;
+using std::chrono::high_resolution_clock;
+using std::chrono::milliseconds;
+
 using namespace geometrycentral;
 using namespace geometrycentral::surface;
 
@@ -29,6 +35,7 @@ std::string MESHNAME = "input mesh";
 double RCOEF = 1.0;
 int KCANDIDATES = 30;
 int RAVOID = 1;
+bool USE_3D_AVOIDANCE = true;
 std::vector<SurfacePoint> POINTS_TO_AVOID = {};
 std::vector<SurfacePoint> SAMPLES;
 
@@ -83,7 +90,14 @@ void saveSamples(const std::vector<SurfacePoint>& points, const std::string& fil
 void myCallback() {
 
     if (ImGui::Button("Sample")) {
-        SAMPLES = poissonSampler->sample(RCOEF, KCANDIDATES, POINTS_TO_AVOID, RAVOID);
+        auto t1 = high_resolution_clock::now();
+
+        SAMPLES = poissonSampler->sample(RCOEF, KCANDIDATES, POINTS_TO_AVOID, RAVOID, USE_3D_AVOIDANCE);
+
+        auto t2 = high_resolution_clock::now();
+        auto ms_int = duration_cast<milliseconds>(t2 - t1);
+        std::cerr << "sample: " << ms_int.count() / 1000. << "s" << std::endl;
+
         visualizeSamples();
 
         // saveSamples(SAMPLES, "points_to_avoid.obj");
@@ -100,6 +114,7 @@ void myCallback() {
 
     ImGui::InputInt("kCandidates", &KCANDIDATES);
 
+    ImGui::Checkbox("Use 3D radius of avoidance", &USE_3D_AVOIDANCE);
 
     // If selecting points manually, only vertices can be selected.
     if (ImGui::TreeNode("Add points to avoid")) {

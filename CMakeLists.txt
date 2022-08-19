@@ -69,10 +69,8 @@ endif()
 
 
 # == Deps
-#add_subdirectory(deps/geometry-central)
-#add_subdirectory(deps/polyscope)
-add_subdirectory(../../Forks/geometry-central deps/geometry-central)
-add_subdirectory(../polyscope deps/polyscope)
+add_subdirectory(deps/geometry-central)
+add_subdirectory(deps/polyscope)
 
 # == Build our project stuff
 
@@ -82,6 +80,5 @@ set(SRCS
 
 add_executable(poisson_disk "${SRCS}")
 target_include_directories(poisson_disk PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include/")
-#target_include_directories(poisson_disk PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/deps/polyscope/deps/args")
-target_include_directories(poisson_disk PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/../polyscope/deps/args")
+target_include_directories(poisson_disk PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/deps/polyscope/deps/args")
 target_link_libraries(poisson_disk geometry-central polyscope)

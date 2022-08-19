@@ -1,4 +1,4 @@
-C++ demo code for the Poisson disk sampler in [geometry-central](http://geometry-central.net/surface/algorithms/flip_geodesics/).
+C++ demo code for the Poisson disk sampler in [geometry-central](https://geometry-central.net/surface/algorithms/surface_sampling/).
 
 ![gui screencap](https://raw.githubusercontent.com/nzfeng/poisson-disk-sampler-demo/main/media/gui_screencap.png)
 

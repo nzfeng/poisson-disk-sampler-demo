@@ -69,7 +69,8 @@ endif()
 
 
 # == Deps
-add_subdirectory(deps/geometry-central)
+add_subdirectory(../../Forks/geometry-central deps/geometry-central)
+#add_subdirectory(deps/geometry-central)
 add_subdirectory(deps/polyscope)
 
 # == Build our project stuff

@@ -30,8 +30,9 @@ polyscope::SurfaceMesh* psMesh;
 // The sampler object
 std::unique_ptr<PoissonDiskSampler> poissonSampler;
 
-// UI parameters
+// parameters
 std::string MESHNAME = "input mesh";
+double UNIT; // user-defined distance unit to make it easier to reason about sampling radius
 double RCOEF = 1.0;
 int KCANDIDATES = 30;
 int RAVOID = 1;
@@ -39,6 +40,21 @@ bool USE_3D_AVOIDANCE = true;
 std::vector<SurfacePoint> POINTS_TO_AVOID = {};
 std::vector<SurfacePoint> SAMPLES;
 
+std::tuple<Vector3, Vector3> boundingBox(VertexPositionGeometry& geometry_) {
+
+    SurfaceMesh& mesh_ = geometry_.mesh;
+    const double inf = std::numeric_limits<double>::infinity();
+    Vector3 bboxMin = {inf, inf, inf};
+    Vector3 bboxMax = {-inf, -inf, -inf};
+    for (Vertex v : mesh_.vertices()) {
+        Vector3& pos = geometry_.vertexPositions[v];
+        for (int i = 0; i < 3; i++) {
+            if (pos[i] <= bboxMin[i]) bboxMin[i] = pos[i];
+            if (pos[i] >= bboxMax[i]) bboxMax[i] = pos[i];
+        }
+    }
+    return std::make_tuple(bboxMin, bboxMax);
+}
 
 void visualizeSamples() {
 
@@ -90,13 +106,21 @@ void saveSamples(const std::vector<SurfacePoint>& points, const std::string& fil
 void myCallback() {
 
     if (ImGui::Button("Sample")) {
+
+        double radius = RCOEF * UNIT;
+        double radiusAvoid = RAVOID * UNIT;
+        PoissonDiskOptions options;
+        options.r = radius;
+        options.kCandidates = KCANDIDATES;
+        options.rAvoidance = radiusAvoid;
+        options.pointsToAvoid = POINTS_TO_AVOID;
+        options.use3DAvoidance = USE_3D_AVOIDANCE;
+
         auto t1 = high_resolution_clock::now();
-
-        SAMPLES = poissonSampler->sample(RCOEF, KCANDIDATES, POINTS_TO_AVOID, RAVOID, USE_3D_AVOIDANCE);
-
+        SAMPLES = poissonSampler->sample(options);
         auto t2 = high_resolution_clock::now();
         auto ms_int = duration_cast<milliseconds>(t2 - t1);
-        std::cerr << "sample: " << ms_int.count() / 1000. << "s" << std::endl;
+        std::cerr << "Sample time: " << ms_int.count() / 1000. << "s" << std::endl;
 
         visualizeSamples();
 
@@ -106,11 +130,6 @@ void myCallback() {
 
     // Options
     ImGui::InputDouble("Scale distance", &RCOEF, 0.0, 0.0, "%.6f");
-    // ImGui::SameLine();
-    // if (ImGui::SliderFloat("", &poissonSampler->rCoef, 0.0, 0.0)) {
-    //     SAMPLES = poissonSampler->sample(RCOEF, KCANDIDATES, POINTS_TO_AVOID);
-    //     visualizeSamples();
-    // }
 
     ImGui::InputInt("kCandidates", &KCANDIDATES);
 
@@ -173,6 +192,11 @@ int main(int argc, char** argv) {
     // Load mesh
     std::string loadedFilename = args::get(inputFilename);
     std::tie(mesh, geometry) = readManifoldSurfaceMesh(loadedFilename);
+
+    // Set distance unit.
+    Vector3 bboxMin, bboxMax;
+    std::tie(bboxMin, bboxMax) = boundingBox(*geometry);
+    UNIT = (bboxMin - bboxMax).norm() / 100.;
 
     // Initialize sampler object.
     poissonSampler = std::unique_ptr<PoissonDiskSampler>(new PoissonDiskSampler(*mesh, *geometry));

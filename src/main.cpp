@@ -110,9 +110,9 @@ void myCallback() {
         double radius = RCOEF * UNIT;
         double radiusAvoid = RAVOID * UNIT;
         PoissonDiskOptions options;
-        options.r = radius;
+        options.minDist = radius;
         options.kCandidates = KCANDIDATES;
-        options.rAvoidance = radiusAvoid;
+        options.minDistAvoidance = radiusAvoid;
         options.pointsToAvoid = POINTS_TO_AVOID;
         options.use3DAvoidance = USE_3D_AVOIDANCE;
 
